@@ -1,17 +1,5 @@
 # Homework 2 (20 Points)
 
-Please submit your solution via NYU Classes.
-
-The deadline for Homework 2 is Friday, September 21, 6pm.
-
-To obtain a local copy of this repository. Open a terminal at the
-location where you want the repository to reside and execute the
-command
-
-```bash
-git clone https://github.com/nyu-pl-fa18/hw02.git
-```
-
 ## Problem 1 (4 Points)
 
 Consider the following pseudo code.
@@ -28,7 +16,7 @@ Consider the following pseudo code.
  7:       println(a); println(b)
  8:       var a: Int = 3
  9:     }
-       
+
 10:     var a: Int = 3
 
 11:     inner()
@@ -61,7 +49,7 @@ C:
  7:       println(a); println(b)// Declarations A1 and B2 are in the static scope
  8:       var a: Int = 3 // A3
  9:     }
-       
+
 10:     var a: Int = 3	// A2
 
 11:     inner()
@@ -83,8 +71,8 @@ C output:
 2
 ```
 
-Repeat the exercise for the declaration-order rules of C# (names must 
-be declared before use, but the static scope of a name is the entire 
+Repeat the exercise for the declaration-order rules of C# (names must
+be declared before use, but the static scope of a name is the entire
 block in which it is declared).
 
 C#:
@@ -100,7 +88,7 @@ C#:
  7:       println(a); println(b)// Declarations A3 and B2 are in the static scope
  8:       var a: Int = 3 // A3
  9:     }
-       
+
 10:     var a: Int = 3	// A2
 
 11:     inner()
@@ -123,7 +111,7 @@ before declaration at line 8.
 Consider the following pseudo code:
 
 ```scala
-var x: Int // global variable
+var x: Int // global variable   // X1
 
 def set_x(n: Int) {
   x = n
@@ -139,7 +127,7 @@ def first () {
 }
 
 def second () {
-  var x: Int
+  var x: Int    // X2
   set x(2)
   print_x()
 }
@@ -154,7 +142,51 @@ def main () {
 ```
 
 What does this program print when `main` is executed if the language
-uses static scoping? What does it print with dynamic scoping? Why?
+uses static scoping?
+
+Static scoping output:
+
+```bash
+1
+1
+2
+2
+```
+
+What does it print with dynamic scoping?
+
+Dynamic scoping output
+
+```bash
+1
+1
+2
+1
+```
+
+Why?
+
+```bash
+main() // most recent binding of x is at X1
+|
+ --> set_x(0) // most recent binding of x is at X1, x@X1 = 0
+|
+ --> first()  // most recent binding of x is at X1
+     |
+      --> set_x(1) // most recent binding of x is at X1; x@X1 = 1
+     |
+      --> print_x() // most recent binding of x is at X1; x@X1 = 1 is printed
+|
+ --> print_x() // most recent binding of x is at X1; x@X1 = 1 is printed
+|
+ --> second() // most recent binding of x is x at X2
+     |
+      --> set_x(2) // most recent binding of x is at X2; x@X2 = 2
+     |
+      --> print_x() // most recent binding of x is at X2; x@X2 = 2 is printed
+|
+ --> print_x() // most recent binding of x is at X1; x@X1 = 1 is printed
+```
 
 
 ## Problem 3 (6 Points)
@@ -196,7 +228,7 @@ Consider the following fragment of code in C:
    beginning of the stack frame. Thus during the execution of the
    call, the value of each local variable can be accessed by adding
    its fixed static offset to the current value of the frame pointer.
-   
+
    Describe an algorithm that a compiler could use to assign stack
    frame offsets to the variables of arbitrary nested blocks of a
    subroutine, in a way that minimizes the total space required to
@@ -212,7 +244,7 @@ following code
 typedef struct list_node {
   void* data;
   struct list_node* next;
-} 
+}
 
 list_node;
 list_node* insert(void* d, list_node* L) {
@@ -250,7 +282,7 @@ void delete_list(list_node* L) {
    while (more_widgets()) {
      L = insert(next_widget(), L);
    }
-   
+
    L = reverse(L);
    ```
 
@@ -266,14 +298,14 @@ void delete_list(list_node* L) {
    while (more_widgets()) {
      L = insert(next_widget(), L);
    }
-   
+
    list_node* T = reverse(L);
-   
+
    delete_list(L);
-   
+
    L = T;
    ```
-   
+
    This seems to solve the insufficient memory problem, but where the
    program used to produce correct results (before running out of
    memory), now its output is strangely corrupted, and Brad goes back
