@@ -194,20 +194,20 @@ main() // most recent binding of x is at X1
 Consider the following fragment of code in C:
 
 ```c
-{
+{                   // Block A
   int a, b, c;
   ...
-  {
+  {                 // Block B
     int d, e;
     ...
-    {
+    {               // Block D
       int f;
       ...
     }
     ...
   }
   ...
-  {
+  {                 // Block C
     int g, h, i;
     ...
   }
@@ -219,6 +219,8 @@ Consider the following fragment of code in C:
    shown variable declarations are the only variable declarations
    contained in this code. How much total space is required for the
    variables in this code when the program is executed?
+
+   At any block, the maximum number of integer local variables visible is 6 (from **D**). So, the total space required is 24 bytes.
 
 2. Recall that the values of local variables for each call to a
    subroutine are stored on the stack in a stack frame (aka activation
@@ -233,6 +235,34 @@ Consider the following fragment of code in C:
    frame offsets to the variables of arbitrary nested blocks of a
    subroutine, in a way that minimizes the total space required to
    store the values of these variables in the stack frame.
+
+   (Very High-level) Algorithm:
+```
+   global map variable_offset;   // key = variable name; value = offset.
+
+   procedure assign_offsets(base_offset) {
+      memory_used = 0;
+      while there are more lines of code {
+         l = get_code_line();
+         if (l == '{') {     // beginning of a new scope
+            assign_offsets(base_offset + memory_used)
+         }
+         else if (l == '}') {  // end of a scope
+            return;
+         }
+         else if (l contains variable declarations) {
+             declarations = get_variable_declarations(l);
+             for d in declarations {
+                variable_offset[d.name] = base_offset + memory_used;
+                memory_used += d.size
+             }
+         }
+         else {
+            process_as_necessary(l);
+         }
+     }
+   }
+   ```
 
 ## Problem 4 (6 Points)
 
