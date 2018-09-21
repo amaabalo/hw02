@@ -46,10 +46,77 @@ before use, and the scope of a name extends from its declaration
 through the end of the block. At each print statement, indicate which
 declarations of `a` and `b` are in the static scope. What does the
 program print when `main` is executed assuming static scoping (or will
-the compiler identify static semantic errors)?  Repeat the exercise
-for the declaration-order rules of C# (names must be declared before
-use, but the static scope of a name is the entire block in which it is
-declared).
+the compiler identify static semantic errors)?
+
+C:
+```scala
+ 1: def main () {
+ 2:   var a: Int = 1	// A1
+ 3:   var b: Int = 2	// B1
+
+ 4:   def middle () {
+ 5:     var b: Int = a	// B2
+
+ 6:     def inner () {
+ 7:       println(a); println(b)// Declarations A1 and B2 are in the static scope
+ 8:       var a: Int = 3 // A3
+ 9:     }
+       
+10:     var a: Int = 3	// A2
+
+11:     inner()
+12:     println(a); println(b)	// Declarations A2 and B2 are in the static scope
+13:   }
+
+14:   middle()
+15:   println(a); println(b)	// Declarations A1 and B1 are in the static scope
+16: }
+```
+
+C output:
+```bash
+1
+1
+3
+1
+1
+2
+```
+
+Repeat the exercise for the declaration-order rules of C# (names must 
+be declared before use, but the static scope of a name is the entire 
+block in which it is declared).
+
+C#:
+```scala
+ 1: def main () {
+ 2:   var a: Int = 1	// A1
+ 3:   var b: Int = 2	// B1
+
+ 4:   def middle () {
+ 5:     var b: Int = a	// B2
+
+ 6:     def inner () {
+ 7:       println(a); println(b)// Declarations A3 and B2 are in the static scope
+ 8:       var a: Int = 3 // A3
+ 9:     }
+       
+10:     var a: Int = 3	// A2
+
+11:     inner()
+12:     println(a); println(b)	// Declarations A2 and B2 are in the static scope
+13:   }
+
+14:   middle()
+15:   println(a); println(b)	// Declarations A1 and B1 are in the static scope
+16: }
+```
+
+C# output:
+```bash
+Static semantic error because variable a is being referenced at line 7
+before declaration at line 8.
+```
 
 ## Problem 2 (4 Points)
 
