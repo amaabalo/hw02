@@ -289,6 +289,9 @@ void delete_list(list_node* L) {
    Sadly, after running for a while, Brad's program always runs out of
    memory and crashes. Explain what's going wrong.
 
+   The problem here is that when a list reverse(L) is called, a new (reversed) list is created, but the memory allocated for the old list
+   is never freed. Eventually, the program runs out of memory and crashes.
+
 2. After Janet patiently explains the problem to him, Brad gives it another
    try:
 
@@ -310,3 +313,39 @@ void delete_list(list_node* L) {
    program used to produce correct results (before running out of
    memory), now its output is strangely corrupted, and Brad goes back
    to Janet for advice. What will she tell him this time?
+
+   Janet will tell him that by deleting ```L```, he is also freeing the data that each node in ```L``` points to:
+
+   ```c
+   free(t->data);
+   ```
+
+   However, when ```L``` was being reversed, the new nodes in the reversed list ```T``` were made to point to the same data as those in ```L```:
+
+   ```c
+   rtn = insert(L->data, rtn);
+   ```
+
+   This means that all of the new nodes in ```T``` will point to deallocated memory (dangling pointers) once ```L``` is deleted, resulting in the corrupted output Brad sees.
+
+   To fix the problem, Janet would advice Brad to create modify the ```delete_list()``` function so that it can either free the nodes along with their data, or free the nodes, but not their data:
+
+   ```c
+   void delete_list(list_node* L, int free_data) {
+     while (L) {
+       list_node* t = L;
+       L = L->next;
+       if (free_data)
+         free(t->data);
+       free(t);
+     }
+   }
+   ```
+
+   And then use
+
+   ```c
+   delete_list(L, 0);
+   ```
+
+   to ensure that ```T```'s data is not freed.
